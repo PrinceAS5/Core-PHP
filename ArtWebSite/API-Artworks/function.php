@@ -17,41 +17,45 @@ function getArtWorksList($type)
 
     $query_run = mysqli_query($connect, $query);
 
-    if ($query_run) :
+    try {
+        if ($query_run) :
 
-        if (mysqli_num_rows($query_run) > 0) :
+            if (mysqli_num_rows($query_run) > 0) :
 
-            $response = mysqli_fetch_all($query_run, MYSQLI_ASSOC);
+                $response = mysqli_fetch_all($query_run, MYSQLI_ASSOC);
 
-            $data = [
-                'status' => 200,
-                'message' => 'Artworks List Fetched Successfully',
-                'data' => $response,
-            ];
-            
-            
-            header("HTTP/1.0 200 OK");
-            return json_encode($data);
+                $data = [
+                    'status' => 200,
+                    'message' => 'Artworks List Fetched Successfully',
+                    'data' => $response,
+                ];
+
+
+                header("HTTP/1.0 200 OK");
+                return json_encode($data);
+
+            else :
+
+                $data = [
+                    'status' => 404,
+                    'message' => 'No Artworks Found',
+                ];
+                header("HTTP/1.0 404 Found No Data");
+                return json_encode($data);
+
+            endif;
 
         else :
 
             $data = [
-                'status' => 404,
-                'message' => 'No Artworks Found',
+                'status' => 500,
+                'message' => 'Internal Server Error',
             ];
-            header("HTTP/1.0 404 Found No Data");
+            header("HTTP/1.0 500 Internal Server Error");
             return json_encode($data);
-            
+
         endif;
-
-    else :
-
-        $data = [
-            'status' => 500,
-            'message' => 'Internal Server Error',
-        ];
-        header("HTTP/1.0 500 Internal Server Error");
-        return json_encode($data);
-
-    endif;
+    } catch (Exception $e) {
+        echo "An error occurred: " . $e->getMessage();
+    }
 }
